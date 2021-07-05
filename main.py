@@ -14,8 +14,8 @@ default_args = {
     'email': ['juanengml@gmail.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'retries': 1,
-    'retry_delay': timedelta(minutes=5),
+    'retries': 1
+   # 'retry_delay': timedelta(minutes=5),
 }
 
 dag = DAG(dag_id='request_endpoint_event',
