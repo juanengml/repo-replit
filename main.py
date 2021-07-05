@@ -18,8 +18,9 @@ endpoint = "http://ec2-54-91-136-29.compute-1.amazonaws.com:8080/status"
 fetch_events = BashOperator(
     task_id="fetch_events",
     bash_command=(
-        "mkdir -p /tmp/events && "
-        "curl {} > /tmp/evento.json".format(endpoint)
+        "mkdir -p /tmp/events ; "
+        "curl {} > /tmp/evento.json ; cat /tmp/evento.json ; ".format(endpoint)
+        
        ),
     dag=dag,
 )
