@@ -13,7 +13,7 @@ args = {
 lista = [100,200,404,401,201]
 
 with DAG(
-    dag_id='example_python_operator',
+    dag_id='req-test-api-http-status',
     default_args=args,
     schedule_interval=None,
     start_date=days_ago(2),
@@ -24,7 +24,7 @@ with DAG(
     def print_context(ds, **kwargs):
         """Print the Airflow context and ds variable from the context."""
         pprint(kwargs)
-        print(ds)
+        pprint(ds)
         from requests import get 
         r = get("https://httpstatuses.com/200").status_code
 
@@ -42,7 +42,7 @@ with DAG(
         time.sleep(random_base)
         from requests import get 
         r = get("https://httpstatuses.com/{}".format(choice(lista))).status_code
-        print(r)
+        pprint(r) 
 
 
 
