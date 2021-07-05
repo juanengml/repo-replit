@@ -7,7 +7,19 @@ from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
 from datetime import timedelta
 
+
+default_args = {
+    'owner': 'airflow',
+    'depends_on_past': False,
+    'email': ['juanengml@gmail.com'],
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+}
+
 dag = DAG(dag_id='request_endpoint_event',
+          default_args=default_args,
           schedule_interval='*/5 * * * *',
           dagrun_timeout=timedelta(seconds=5))
 endpoint = "http://ec2-54-91-136-29.compute-1.amazonaws.com:8080/status"
