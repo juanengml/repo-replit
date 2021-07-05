@@ -5,14 +5,11 @@ import pandas as pd
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
+from datetime import timedelta
 
-dag = DAG(
-    dag_id="request_endpoint_event",
-    schedule_interval="@daily",
-    start_date=datetime(2019, 1, 1),
-    end_date=datetime(2019, 1, 5),
-)
-
+dag = DAG(dag_id='request_endpoint_event',
+          schedule_interval='*/5 * * * *',
+          dagrun_timeout=timedelta(seconds=5))
 endpoint = "http://ec2-54-91-136-29.compute-1.amazonaws.com:8080/status"
 
 fetch_events = BashOperator(
