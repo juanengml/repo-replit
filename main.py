@@ -15,7 +15,7 @@ lista = [100,200,404,401,201]
 with DAG(
     dag_id='req-test-api-http-status',
     default_args=args,
-    schedule_interval=None,
+    schedule_interval="@hourly",
     start_date=days_ago(2),
     tags=['example'],
 ) as dag:
@@ -43,8 +43,6 @@ with DAG(
         from requests import get 
         r = get("https://httpstatuses.com/{}".format(choice(lista))).status_code
         pprint(r) 
-
-
 
 
 
