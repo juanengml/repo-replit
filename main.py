@@ -1,9 +1,8 @@
-
-from datetime import timedelta
+import time
+from pprint import pprint
 
 from airflow import DAG
-from airflow.operators.bash import BashOperator
-from airflow.operators.dummy import DummyOperator
+from airflow.operators.python import PythonOperator, PythonVirtualenvOperator
 from airflow.utils.dates import days_ago
 
 args = {
@@ -11,51 +10,66 @@ args = {
 }
 
 with DAG(
-    dag_id='example_bash_operator',
+    dag_id='example_python_operator',
     default_args=args,
-    schedule_interval='0 0 * * *',
+    schedule_interval=None,
     start_date=days_ago(2),
-    dagrun_timeout=timedelta(minutes=5),
-    tags=['example', 'example2'],
-    params={"example_key": "example_value"},
+    tags=['example'],
 ) as dag:
 
-    run_this_last = DummyOperator(
-        task_id='run_this_last',
+    # [START howto_operator_python]
+    def print_context(ds, **kwargs):
+        """Print the Airflow context and ds variable from the context."""
+        pprint(kwargs)
+        print(ds)
+        return 'Whatever you return gets printed in the logs'
+
+    run_this = PythonOperator(
+        task_id='print_the_context',
+        python_callable=print_context,
     )
+    # [END howto_operator_python]
 
-    # [START howto_operator_bash]
-    run_this = BashOperator(
-        task_id='run_after_loop',
-        bash_command='echo 1',
-    )
-    # [END howto_operator_bash]
+    # [START howto_operator_python_kwargs]
+    def my_sleeping_function(random_base):
+        """This is a function that will run within the DAG execution"""
+        time.sleep(random_base)
 
-    run_this >> run_this_last
-
-    for i in range(3):
-        task = BashOperator(
-            task_id='runme_' + str(i),
-            bash_command='echo "{{ task_instance_key_str }}" && sleep 1',
+    # Generate 5 sleeping tasks, sleeping from 0.0 to 0.4 seconds respectively
+    for i in range(5):
+        task = PythonOperator(
+            task_id='sleep_for_' + str(i),
+            python_callable=my_sleeping_function,
+            op_kwargs={'random_base': float(i) / 10},
         )
-        task >> run_this
 
-    # [START howto_operator_bash_template]
-    also_run_this = BashOperator(
-        task_id='also_run_this',
-        bash_command='echo "run_id={{ run_id }} | dag_run={{ dag_run }}"',
+        run_this >> task
+    # [END howto_operator_python_kwargs]
+
+    # [START howto_operator_python_venv]
+    def callable_virtualenv():
+        """
+        Example function that will be performed in a virtual environment.
+        Importing at the module level ensures that it will not attempt to import the
+        library before it is installed.
+        """
+        from time import sleep
+
+        from colorama import Back, Fore, Style
+
+        print(Fore.RED + 'some red text')
+        print(Back.GREEN + 'and with a green background')
+        print(Style.DIM + 'and in dim text')
+        print(Style.RESET_ALL)
+        for _ in range(10):
+            print(Style.DIM + 'Please wait...', flush=True)
+            sleep(10)
+        print('Finished')
+
+    virtualenv_task = PythonVirtualenvOperator(
+        task_id="virtualenv_python",
+        python_callable=callable_virtualenv,
+        requirements=["colorama==0.4.0"],
+        system_site_packages=False,
     )
-    # [END howto_operator_bash_template]
-    also_run_this >> run_this_last
-
-# [START howto_operator_bash_skip]
-this_will_skip = BashOperator(
-    task_id='this_will_skip',
-    bash_command='echo "hello world"; exit 99;',
-    dag=dag,
-)
-# [END howto_operator_bash_skip]
-this_will_skip >> run_this_last
-
-if __name__ == "__main__":
-    dag.cli()
+    # [END howto_operator_python_venv]
