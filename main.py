@@ -31,13 +31,14 @@ def _trata_json(input_path, output_path):
      # Opening JSON file
     f = open(input_path)
     data = json.load(f)
-    status = data['appState']['yoloStatus']+str(dt.now())
+    status = data['appState']['yoloStatus']
     f.close()
     import csv
     # open the file in the write mode
     with open(output_path, 'w') as f:
     # create the csv writer
        writer = csv.writer(f)
+       print(status, dt.now())
        writer.writerow(status)
    
 
