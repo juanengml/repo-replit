@@ -18,10 +18,11 @@ default_args = {
    # 'retry_delay': timedelta(minutes=5),
 }
 
-dag = DAG(dag_id='request_endpoint_event',
+dag = DAG(dag_id='request_endpoint_event_test',
           default_args=default_args,
           schedule_interval='*/5 * * * *',
           dagrun_timeout=timedelta(seconds=5))
+
 endpoint = "http://ec2-54-91-136-29.compute-1.amazonaws.com:8080/status"
 
 fetch_events = BashOperator(
