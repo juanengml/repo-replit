@@ -43,7 +43,7 @@ with DAG(
         from requests import get 
         r = get("https://httpstatuses.com/{}".format(choice(lista))).status_code
         pprint(r) 
-
+   
 
 
     # Generate 5 sleeping tasks, sleeping from 0.0 to 0.4 seconds respectively
@@ -53,8 +53,18 @@ with DAG(
             python_callable=my_sleeping_function,
             op_kwargs={'random_base': float(i) / 10},
         )
-
+   
         run_this >> task 
+
+    for i in range(5):
+        task = PythonOperator(
+            task_id='sleep_for_' + str(i),
+            python_callable=my_sleeping_function,
+            op_kwargs={'random_base': float(i) / 10},
+        ) 
+        
+        run_this >> task 
+
     # [END howto_operator_python_kwargs]
 
    
