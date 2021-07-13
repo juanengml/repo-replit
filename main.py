@@ -4,6 +4,12 @@ from random import choice
 from airflow import DAG
 from airflow.operators.python import PythonOperator, PythonVirtualenvOperator
 from airflow.utils.dates import days_ago
+import pandas as pd 
+from requests import get 
+
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
 
 args = {
     'owner': 'airflow',
@@ -21,34 +27,57 @@ tags=['example'],
 ) as dag:
 
     # [START howto_operator_python]
-    def print_context(ds, **kwargs):
+    def extracao_api():
         """Print the Airflow context and ds variable from the context."""
         r = "Deu Certo AMOre"
-        print(r)
+        endpoint = "https://api-gt-services.juanengml.repl.co/api/v1/users/ativos"
+        r = get(endpoint).json()
+        df = pd.DataFrame(r)
+        df.to_csv("/tmp/base.csv",index=False)
+        print(df.head())
         return r
 
-    run_this = PythonOperator(
-        task_id='inicio_deb',
-        python_callable=print_context,
+    extracao_api_task = PythonOperator(
+        task_id='extracao_api_rest',
+        python_callable=extracao_api,
     )
     # [END howto_operator_python]
 
     # [START howto_operator_python_kwargs]
-    def my_sleeping_function(random_base):
+    def transformacao(random_base):
         """This is a function that will run within the DAG execution"""
         time.sleep(10)
+        print("READ CSV AND TRANSFORM DATA FOR NEW CSV_FINAL")
+        base = pd.read_csv("/tmp/base.csv")
+        print(base.head()) 
+        
+        print("gerar base_rede_social.csv")
+        base_rede_social = base.query("site != 'www.g1.com.br'").query("site != 'www.g1.globo.com.br'").query("site != 'www.oestadao.com.br'")
+        base_rede_social.to_csv("/tmp/base_rede_social.csv",index=False)
+        
+        print("gerar base_noticias.csv")
+        base_noticias = base.query("site != 'www.facebook.com'").query("site != 'www.twitter.com'").query("site != 'www.tiktok.com'")
+        base_noticias.to_csv("/tmp/base_noticias.csv",index=False)
         print("FELIZ !!!")
 
-
-    # Generate 5 sleeping tasks, sleeping from 0.0 to 0.4 seconds respectively
-    for i in range(5):
-        task = PythonOperator(
-            task_id='dormindo_no_ponto_por_' + str(i),
-            python_callable=my_sleeping_function,
-            op_kwargs={'random_base': float(i) / 10},
+    transformaca_api_split_task = PythonOperator(
+            task_id='transformacao_split_data',
+            python_callable=transformacao
+            
         )
+    def load():
+        """This is a function that will run within the DAG execution"""
+        time.sleep(10)
+        print("LOAD DADOS IN DB ")
+
+    load_data = PythonOperator(
+            task_id='load_data_to_db_firebase',
+            python_callable=load
+            
+        )    
+    # Generate 5 sleeping tasks, sleeping from 0.0 to 0.4 seconds respectively
    
-        run_this >> task 
+   extracao_api_task >> transformaca_api_split_task  >> load_data
 
     # [END howto_operator_python_kwargs]
 
