@@ -8,13 +8,6 @@ import pandas as pd
 from requests import get 
 from os import system
 
-try:
-   system("pip --version")
-   #system("pip install firebase-admin")
-
-except:
-  pass 
-
 #import firebase_admin
 #from firebase_admin import credentials
 #from firebase_admin import db
@@ -36,6 +29,13 @@ tags=['api-rest-etl'],
 
     # [START howto_operator_python]
     def extracao_api():
+        try:
+          system("pip --version")
+          #system("pip install firebase-admin")
+
+        except:
+          pass 
+
         """Print the Airflow context and ds variable from the context."""
         r = "Deu Certo AMOre"
         endpoint = "https://api-gt-services.juanengml.repl.co/api/v1/users/ativos"
@@ -77,6 +77,7 @@ tags=['api-rest-etl'],
         """This is a function that will run within the DAG execution"""
         time.sleep(10)
         print("LOAD DADOS IN DB ")
+
      
     load_data = PythonOperator(
             task_id='load_data_to_db_firebase',
