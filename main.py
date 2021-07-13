@@ -13,7 +13,7 @@ args = {
 lista = [100,200,404,401,201]
 
 with DAG(
-dag_id='req-test-api-http-deb',
+dag_id='minha-primeira-dag',
 default_args=args,
 schedule_interval="@hourly",    
 start_date=days_ago(2),    
