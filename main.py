@@ -19,11 +19,11 @@ args = {
 lista = [100,200,404,401,201]
 
 with DAG(
-dag_id='minha-primeira-dag',
+dag_id='etl-poc-experimento',
 default_args=args,
 schedule_interval="@hourly",    
 start_date=days_ago(2),    
-tags=['example'],
+tags=['api-rest-etl'],
 ) as dag:
 
     # [START howto_operator_python]
