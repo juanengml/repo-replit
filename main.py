@@ -77,7 +77,7 @@ tags=['api-rest-etl'],
         """This is a function that will run within the DAG execution"""
         time.sleep(10)
         print("LOAD DADOS IN DB ")
-
+     
     load_data = PythonOperator(
             task_id='load_data_to_db_firebase',
             python_callable=load
