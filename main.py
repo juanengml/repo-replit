@@ -6,10 +6,18 @@ from airflow.operators.python import PythonOperator, PythonVirtualenvOperator
 from airflow.utils.dates import days_ago
 import pandas as pd 
 from requests import get 
+from os import system
 
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import db
+try:
+   system("pip --version")
+   #system("pip install firebase-admin")
+
+except:
+  pass 
+
+#import firebase_admin
+#from firebase_admin import credentials
+#from firebase_admin import db
 
 args = {
     'owner': 'airflow',
