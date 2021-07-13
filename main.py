@@ -13,11 +13,11 @@ args = {
 lista = [100,200,404,401,201]
 
 with DAG(
-    dag_id='req-test-api-http-status-demo',
-    default_args=args,
-    schedule_interval="@hourly",
-    start_date=days_ago(2),
-    tags=['example'],
+dag_id='req-test-api-http-deb',
+default_args=args,
+schedule_interval="@hourly",    
+start_date=days_ago(2),    
+tags=['example'],
 ) as dag:
 
     # [START howto_operator_python]
@@ -27,11 +27,10 @@ with DAG(
         pprint(ds)
         from requests import get 
         r = get("https://httpstatuses.com/200").status_code
-
         return "api viva " if r == 200 else "api zuada "
 
     run_this = PythonOperator(
-        task_id='print_the_context',
+        task_id='print_the_context_deb',
         python_callable=print_context,
     )
     # [END howto_operator_python]
