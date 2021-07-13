@@ -76,8 +76,8 @@ tags=['api-rest-etl'],
             
         )    
     # Generate 5 sleeping tasks, sleeping from 0.0 to 0.4 seconds respectively
-   
-   extracao_api_task >> transformaca_api_split_task  >> load_data
+    
+    extracao_api_task >> transformaca_api_split_task  >> load_data
 
     # [END howto_operator_python_kwargs]
 
