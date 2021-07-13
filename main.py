@@ -23,14 +23,12 @@ tags=['example'],
     # [START howto_operator_python]
     def print_context(ds, **kwargs):
         """Print the Airflow context and ds variable from the context."""
-        pprint(kwargs)
-        pprint(ds)
-        from requests import get 
-        r = get("https://httpstatuses.com/200").status_code
-        return "api viva " if r == 200 else "api zuada "
+        r = "Deu Certo AMOre"
+        print(r)
+        return r
 
     run_this = PythonOperator(
-        task_id='print_the_context_deb',
+        task_id='inicio_deb',
         python_callable=print_context,
     )
     # [END howto_operator_python]
@@ -38,17 +36,14 @@ tags=['example'],
     # [START howto_operator_python_kwargs]
     def my_sleeping_function(random_base):
         """This is a function that will run within the DAG execution"""
-        time.sleep(random_base)
-        from requests import get 
-        r = get("https://httpstatuses.com/{}".format(choice(lista))).status_code
-        pprint(r) 
-   
+        time.sleep(10)
+        print("FELIZ !!!")
 
 
     # Generate 5 sleeping tasks, sleeping from 0.0 to 0.4 seconds respectively
     for i in range(5):
         task = PythonOperator(
-            task_id='sleep_for_' + str(i),
+            task_id='dormindo_no_ponto_por_' + str(i),
             python_callable=my_sleeping_function,
             op_kwargs={'random_base': float(i) / 10},
         )
