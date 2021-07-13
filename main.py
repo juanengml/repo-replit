@@ -52,7 +52,7 @@ tags=['api-rest-etl'],
     # [END howto_operator_python]
 
     # [START howto_operator_python_kwargs]
-    def transformacao(random_base):
+    def transformacao():
         """This is a function that will run within the DAG execution"""
         time.sleep(10)
         print("READ CSV AND TRANSFORM DATA FOR NEW CSV_FINAL")
